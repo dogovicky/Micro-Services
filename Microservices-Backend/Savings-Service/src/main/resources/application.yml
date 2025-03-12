@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: Savings-Service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/savings_db
+    username: root_user
+    password: "@rootuser"
+    driverClassName: org.postgresql.Driver
+
+server:
+  port: 8083
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    preferIpAddress: true

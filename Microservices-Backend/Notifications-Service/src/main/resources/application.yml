@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: Notifications-Service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/notifications_db
+    username: root_user
+    password: "@rootuser"
+    driverClassName: org.postgresql.Driver
+
+server:
+  port: 8084
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    preferIpAddress: true

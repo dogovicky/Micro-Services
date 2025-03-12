@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: Loan-Service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/loans_db
+    username: root_user
+    password: "@rootuser"
+    driverClassName: org.postgresql.Driver
+
+server:
+  port: 8085
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    preferIpAddress: true
