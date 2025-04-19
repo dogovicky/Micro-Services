@@ -1,5 +1,6 @@
 package com.capricon.User_Service.service;
 
+import com.capricon.User_Service.client.ValidationClient;
 import com.capricon.User_Service.dto.*;
 import com.capricon.User_Service.exception.TechnicalException;
 import com.capricon.User_Service.exception.UserException;
@@ -37,6 +38,8 @@ public class SignUpService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final ValidationClient validationClient;
+
 
     //Step 1: Save basic info
     public ApiResponse<String> saveBasicInfo(BasicInfoDTO basicInfoDTO) {
@@ -73,13 +76,44 @@ public class SignUpService {
             redisTemplate.expire(redisKey, Duration.ofMinutes(30)); //Reset expiration
 
             log.info("Password successfully saved for {}", email);
-            return ApiResponse.success(email, "Proceed to next step");
+            return ApiResponse.success(email, "Proceed to next step. Account validation");
         } catch (Exception ex) {
             return handleSignUpException(ex);
         }
     }
 
-    // Step 3: Capture profile info and finalize the process
+    //Step 3: Capture verification request and validate account to be enabled
+    public ApiResponse<String> verifyAccount(VerificationRequest request) {
+        log.info("Validation verification code for email {}", request.getEmail());
+        try {
+            Boolean isVerified = validationClient.verifyCode(request);
+
+            if (isVerified) {
+
+                log.info("Verification successful");
+                // Update is_enabled flag for user
+                String redisKey = "signup:" + request.getEmail();
+                if (!Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
+                    log.error("Key not found for email: {}", request.getEmail());
+                    return ApiResponse.error(HttpStatus.BAD_REQUEST, "Invalid or expired sign up session." +
+                            " Please restart the process.");
+                }
+                redisTemplate.opsForHash().put(redisKey, "isEnabled", true);
+                redisTemplate.expire(redisKey, Duration.ofMinutes(30)); // Reset expiration time
+
+                return ApiResponse.success("Verification successful");
+
+            } else {
+                log.error("Failed to validate account.");
+                return ApiResponse.success("Verification failed");
+            }
+        } catch (Exception ex) {
+            return handleSignUpException(ex);
+        }
+
+    }
+
+    // Step 4: Capture profile info and finalize the process
     public ApiResponse<ResponseTokenDTO> saveProfileInfo(String email, ProfileInfoDTO profileInfoDTO) {
         try {
             String redisKey = "signup:" + email;
@@ -95,6 +129,7 @@ public class SignUpService {
             String redisEmail = (String) signupData.get("email");
             String phoneNumber = (String) signupData.get("phoneNumber");
             String encodedPassword = (String) signupData.get("password");
+            boolean isEnabled = (Boolean) signupData.get("isEnabled");
 
             // Build User and save details to database
             User user = User.builder()
@@ -102,7 +137,9 @@ public class SignUpService {
                     .email(redisEmail)
                     .phoneNumber(phoneNumber)
                     .password(encodedPassword)
+                    .isEnabled(isEnabled)
                     .build();
+
             // Save time stamp details
             setTimestampDetails(user, OffsetDateTime.now());
 

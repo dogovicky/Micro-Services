@@ -17,6 +17,8 @@ spring:
     exchanges:
       emailSignup: x.signup
       emailLogin: x.login
+      smsSignup: x.signup
+      smsLogin: x.login
     queues:
       emailSignup: q.email.signup
       smsSignup: q.sms.signup

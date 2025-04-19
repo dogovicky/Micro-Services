@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Verification</title>
+    <style>
+        body {
+            min-height: 100vh;
+        }
+        .header {
+            font-size: 1em;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+        }
+        .content h5 {
+            font-size: 1.2em;
+        }
+        .footer {
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .footer ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        Welcome to Easy Pay, <br> your best money transfer system
+    </div>
+    <div class="content">
+        <h5>Hello, <span th:text="${email}"></span>!</h5>
+        <p>Thank you for signing up. Please use the following code to verify and activate your account:</p>
+        <p><strong th:text="${verificationCode}"></strong></p>
+        <p>Do not share this code with anyone.</p>
+    </div>
+    <div class="footer">
+        <p>
+            If you experience any difficulties, reach out to our support team.
+        </p>
+        <ul>
+            <li>support@easypay.com</li>
+            <li>+254 212 456 78</li>
+        </ul>
+    </div>
+</body>
+</html>

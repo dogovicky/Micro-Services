@@ -17,7 +17,7 @@ public class RabbitMQPublisher {
     private final RabbitTemplate rabbitTemplate;
 
     public void sendMessage(String exchangeName, String routingKey, Object payload) {
-        log.info("RabbitMQ service called...");
+        log.info("RabbitMQ service called...: {}, {}", exchangeName, routingKey);
         try {
             String exchange = properties.getExchanges().get(exchangeName);
             String key = properties.getRoutingKeys().get(routingKey);

@@ -8,12 +8,14 @@ spring:
     password: rootuser
     driverClassName: org.postgresql.Driver
 
+  # RabbitMQ configuration
   rabbitmq:
     host: localhost
     port: 5672
     username: guest
     password: guest
 
+  # Flyway configuration
   flyway:
     enabled: false
     baseline-on-migrate: true
@@ -21,6 +23,13 @@ spring:
     user: ${spring.datasource.username}
     password: ${spring.datasource.password}
     url: ${spring.datasource.url}
+
+  # Thymeleaf configuration
+  thymeleaf:
+    cache: false
+    mode: HTML
+    prefix: classpath:/templates/
+    suffix: .html
 
 server:
   port: 8084
@@ -32,3 +41,18 @@ eureka:
 
   instance:
     preferIpAddress: true
+
+brevo:
+  api:
+    key: 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
+
+    url: https://api.brevo.com/v3/smtp/email
+
+app:
+  email:
+    from:
+      address: dogovicky05@gmail.com
+      name: Easy Pay
+
+  verification:
+    expiry-minutes: 15

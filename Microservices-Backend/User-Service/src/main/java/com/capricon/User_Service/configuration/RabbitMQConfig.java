@@ -2,6 +2,7 @@ package com.capricon.User_Service.configuration;
 
 import com.capricon.User_Service.components.RabbitMQProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Declarables;
 import org.springframework.amqp.core.DirectExchange;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class RabbitMQConfig {
@@ -43,10 +45,13 @@ public class RabbitMQConfig {
     @Bean
     public ConnectionFactory connectionFactory() {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-        connectionFactory.setUri(host);
+        connectionFactory.setHost(host);
         connectionFactory.setPort(Integer.parseInt(port));
         connectionFactory.setUsername(username);
         connectionFactory.setPassword(password);
+        connectionFactory.setVirtualHost("/");
+        connectionFactory.setConnectionTimeout(30000); // 30 seconds timeout
+
         connectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
         connectionFactory.setPublisherReturns(true);
 

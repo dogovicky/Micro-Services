@@ -2,6 +2,7 @@ package com.capricon.User_Service.controller;
 
 
 import com.capricon.User_Service.dto.*;
+import com.capricon.User_Service.service.RabbitMQPublisher;
 import com.capricon.User_Service.service.SignUpService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class SignUpController {
 
     private final SignUpService signUpService;
+    private final RabbitMQPublisher rabbitMQPublisher;
 
     @PostMapping("/signup/basic_info")
     public ResponseEntity<ApiResponse<String>> saveBasicInfo(@Valid @RequestBody BasicInfoDTO basicInfoDTO) {
@@ -43,6 +45,7 @@ public class SignUpController {
             ApiResponse<String> response = signUpService.savePassword(email, passwordDTO);
             if (response.isSuccess()) {
                 log.info("Successfully saved password");
+                rabbitMQPublisher.sendMessage("emailSignup", "emailSignup", email);
                 return ResponseEntity.ok(response);
             } else {
                 log.error("Error saving password");
@@ -50,6 +53,23 @@ public class SignUpController {
             }
         } catch (Exception ex) {
             return handleSignUpControllerException(ex);
+        }
+    }
+
+    @PostMapping("/signup/validate-account")
+    public ResponseEntity<ApiResponse<String>> validateAccount(@Valid @RequestBody VerificationRequest request) {
+        log.info("Calling validation method");
+        try {
+            ApiResponse<String> response = signUpService.verifyAccount(request);
+            if (response.isSuccess()) {
+                log.info("Account validated");
+                return ResponseEntity.ok(response);
+            } else {
+                log.error("Error validating account");
+                return ResponseEntity.status(response.getStatus()).body(response);
+            }
+        } catch (Exception e) {
+            return handleSignUpControllerException(e);
         }
     }
 
