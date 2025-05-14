@@ -66,7 +66,7 @@ public class SignUpService {
     public ApiResponse<String> savePassword(String email, PasswordDTO passwordDTO) {
         try {
             String redisKey = "signup:" + email;
-            if (!Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
+            if (!redisTemplate.hasKey(redisKey)) {
                 log.error("Redis key not found for email: {}", email);
                 return ApiResponse.error(HttpStatus.BAD_REQUEST, "Invalid or expired sign up session." +
                         " Please restart the process.");
@@ -93,7 +93,7 @@ public class SignUpService {
                 log.info("Verification successful");
                 // Update is_enabled flag for user
                 String redisKey = "signup:" + request.getEmail();
-                if (!Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
+                if (!redisTemplate.hasKey(redisKey)) {
                     log.error("Key not found for email: {}", request.getEmail());
                     return ApiResponse.error(HttpStatus.BAD_REQUEST, "Invalid or expired sign up session." +
                             " Please restart the process.");
@@ -117,7 +117,7 @@ public class SignUpService {
     public ApiResponse<ResponseTokenDTO> saveProfileInfo(String email, ProfileInfoDTO profileInfoDTO) {
         try {
             String redisKey = "signup:" + email;
-            if (!Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
+            if (!redisTemplate.hasKey(redisKey)) {
                 log.error("Redis Key not found for email: {}", email);
                 return ApiResponse.error(HttpStatus.BAD_REQUEST, "Invalid or expired sign up session." +
                         " Please restart the process.");
